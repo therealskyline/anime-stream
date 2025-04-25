@@ -1,0 +1,161 @@
+========== GUIDE : COMMENT AJOUTER UN ANIME MANUELLEMENT ==========
+
+Ce guide explique comment ajouter un nouvel anime à votre site Anime Zone sans utiliser le panneau d'administration.
+
+== MÉTHODE 1 : MODIFICATION DIRECTE DU FICHIER JSON ==
+
+1. Ouvrez le fichier : static/data/anime.json
+2. Ajoutez un nouvel objet anime dans le tableau "anime" en suivant ce format :
+
+{
+  "id": XX,          // Utilisez un ID unique (nombre entier) supérieur aux IDs existants
+  "title": "Titre de l'anime",
+  "description": "Description détaillée de l'anime",
+  "image": "/static/images/anime/nom-de-image.jpg",  // Assurez-vous d'avoir l'image dans ce dossier
+  "genres": ["genre1", "genre2", "genre3"],  // Exemples : action, adventure, fantasy, comedy, etc.
+  "rating": X.X,     // Note sur 10 (ex: 8.5)
+  "featured": true,  // true pour mettre en avant sur la page d'accueil, false sinon
+  "seasons": [
+    {
+      "season_number": 1,
+      "episodes": [
+        {
+          "episode_number": 1,
+          "title": "Titre de l'épisode 1",
+          "description": "Description de l'épisode 1",
+          "video_url": "https://drive.google.com/file/d/ID_VIDEO/view?usp=drive_link"
+        },
+        {
+          "episode_number": 2,
+          "title": "Titre de l'épisode 2",
+          "description": "Description de l'épisode 2",
+          "video_url": "https://drive.google.com/file/d/ID_VIDEO/view?usp=drive_link"
+        }
+        // Ajoutez autant d'épisodes que nécessaire
+      ]
+    }
+    // Vous pouvez ajouter d'autres saisons si nécessaire
+  ]
+}
+
+IMPORTANT :
+- Veillez à respecter la syntaxe JSON (virgules entre les éléments, mais pas après le dernier élément)
+- Pour les IDs vidéo Google Drive, remplacez "ID_VIDEO" par l'ID réel de votre vidéo
+- Les images doivent être téléchargées dans le dossier static/images/anime/
+
+== MÉTHODE 2 : RÉACTIVER LE PANNEAU D'ADMINISTRATION ==
+
+Si vous préférez utiliser un formulaire pour ajouter des animes, vous pouvez réactiver le panneau d'administration :
+
+1. Restaurez les routes administratives dans app.py en ajoutant :
+
+@app.route('/admin')
+def admin():
+    # Vérifier si l'utilisateur est connecté
+    if 'admin_authenticated' not in session or not session['admin_authenticated']:
+        return redirect(url_for('admin_login'))
+    
+    return render_template('admin.html', message=None, success=None)
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    error = None
+    
+    if request.method == 'POST':
+        password = request.form.get('password')
+        
+        # Vérifier le mot de passe (0205)
+        if password == '0205':
+            session['admin_authenticated'] = True
+            return redirect(url_for('admin'))
+        else:
+            error = "Mot de passe incorrect. Veuillez réessayer."
+    
+    return render_template('admin_login.html', error=error)
+
+@app.route('/admin/logout')
+def admin_logout():
+    # Supprimer la session
+    session.pop('admin_authenticated', None)
+    return redirect(url_for('index'))
+
+@app.route('/admin/add_anime', methods=['POST'])
+def add_anime():
+    # Vérifier si l'utilisateur est connecté
+    if 'admin_authenticated' not in session or not session['admin_authenticated']:
+        return redirect(url_for('admin_login'))
+    
+    try:
+        # Charger la base de données actuelle
+        data = load_anime_data()
+        
+        # Générer un nouvel ID (max ID + 1)
+        new_id = max([anime['id'] for anime in data['anime']]) + 1 if data['anime'] else 1
+        
+        # Récupérer les données du formulaire
+        title = request.form.get('title')
+        description = request.form.get('description')
+        image = request.form.get('image')
+        genres = [genre.strip() for genre in request.form.get('genres').split(',')]
+        rating = float(request.form.get('rating'))
+        featured = request.form.get('featured') == 'yes'
+        episode_count = int(request.form.get('episode_count', 1))
+        
+        # Créer la structure de l'anime
+        new_anime = {
+            "id": new_id,
+            "title": title,
+            "description": description,
+            "image": image,
+            "genres": genres,
+            "rating": rating,
+            "featured": featured,
+            "seasons": [
+                {
+                    "season_number": 1,
+                    "episodes": []
+                }
+            ]
+        }
+        
+        # Ajouter les épisodes
+        for i in range(1, episode_count + 1):
+            episode = {
+                "episode_number": i,
+                "title": request.form.get(f'episode_title_{i}'),
+                "description": request.form.get(f'episode_description_{i}'),
+                "video_url": request.form.get(f'episode_video_{i}')
+            }
+            new_anime["seasons"][0]["episodes"].append(episode)
+        
+        # Ajouter le nouvel anime à la base de données
+        data['anime'].append(new_anime)
+        
+        # Sauvegarder les données
+        with open('static/data/anime.json', 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        
+        return render_template('admin.html', message="Anime ajouté avec succès!", success=True)
+    
+    except Exception as e:
+        logging.error(f"Erreur lors de l'ajout d'un anime: {str(e)}")
+        return render_template('admin.html', message=f"Erreur: {str(e)}", success=False)
+
+2. Restaurez le lien dans le menu en modifiant templates/base.html pour ajouter :
+
+<li class="nav-item">
+    <a href="/admin" class="nav-link">Admin</a>
+</li>
+
+3. Vous pouvez accéder au panneau d'administration à l'adresse /admin
+   (Mot de passe : 0205)
+
+== NOTES IMPORTANTES ==
+
+- Les vidéos doivent être hébergées sur Google Drive avec le lien au format:
+  https://drive.google.com/file/d/ID_VIDEO/view?usp=drive_link
+  
+- Pour les images d'animes, téléchargez-les dans le dossier /static/images/anime/
+
+- Les changements dans le fichier JSON sont pris en compte immédiatement
+  grâce à la fonction load_anime_data() qui recharge les données à chaque requête

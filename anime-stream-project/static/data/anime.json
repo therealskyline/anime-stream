@@ -1,0 +1,76 @@
+{
+  "anime": [
+    {
+      "id": 1,
+      "title": "Attack on Titan",
+      "description": "In a world where humanity lives within cities surrounded by enormous walls due to the Titans, giant humanoid beings who devour humans seemingly without reason.",
+      "image": "/static/images/anime/attack-on-titan.jpg",
+      "genres": ["action", "drama", "fantasy"],
+      "rating": 9.0,
+      "featured": true,
+      "seasons": [
+        {
+          "season_number": 1,
+          "episodes": [
+            {
+              "episode_number": 1,
+              "title": "To You, 2000 Years Later",
+              "description": "After 100 years of peace, humanity is suddenly reminded of the terror of being at the Titans' mercy.",
+              "video_url": "https://drive.google.com/file/d/1MXN72LKpkLUEr7jM8tOloBgIjxNyoxdj/view?usp=drive_link"
+            },
+            {
+              "episode_number": 2,
+              "title": "That Day",
+              "description": "After the Titans break through the wall, Eren vows that he will kill every Titan on earth.",
+              "video_url": "https://drive.google.com/file/d/1MXN72LKpkLUEr7jM8tOloBgIjxNyoxdj/view?usp=drive_link"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Demon Slayer",
+      "description": "A youth begins a quest to fight demons and save his sister after his family is slaughtered and his sister is turned into a demon.",
+      "image": "/static/images/anime/demon-slayer.jpg",
+      "genres": ["action", "fantasy", "supernatural"],
+      "rating": 8.9,
+      "featured": true,
+      "seasons": [
+        {
+          "season_number": 1,
+          "episodes": [
+            {
+              "episode_number": 1,
+              "title": "Cruelty",
+              "description": "Tanjiro ventures out to sell charcoal but ends up staying the night at someone else's house due to rumors about a demon nearby.",
+              "video_url": "https://drive.google.com/file/d/1MXN72LKpkLUEr7jM8tOloBgIjxNyoxdj/view?usp=drive_link"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "My Hero Academia",
+      "description": "In a world where people with superpowers known as 'Quirks' are the norm, a boy without powers dreams of becoming a superhero.",
+      "image": "/static/images/anime/my-hero-academia.jpg",
+      "genres": ["action", "comedy", "superhero"],
+      "rating": 8.7,
+      "featured": true,
+      "seasons": [
+        {
+          "season_number": 1,
+          "episodes": [
+            {
+              "episode_number": 1,
+              "title": "Izuku Midoriya: Origin",
+              "description": "Izuku Midoriya desperately wants to be a hero, but he is one of the few in his generation born without a Quirk.",
+              "video_url": "https://drive.google.com/file/d/1MXN72LKpkLUEr7jM8tOloBgIjxNyoxdj/view?usp=drive_link"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

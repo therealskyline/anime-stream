@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin - Ajouter un anime{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h1 style="margin-bottom: 0;">Ajouter un nouvel anime</h1>
+        <a href="/admin/logout" style="background-color: #dc3545; color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 0.25rem; font-weight: 600;">Se déconnecter</a>
+    </div>
+    
+    <div style="background-color: #222; color: white; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem; border-left: 4px solid var(--primary-color);">
+        <h3 style="margin-bottom: 0.5rem; color: white;">Guide d'utilisation</h3>
+        <ol style="padding-left: 1.5rem;">
+            <li style="margin-bottom: 0.5rem;">Remplissez les informations générales de l'anime (titre, description, etc.)</li>
+            <li style="margin-bottom: 0.5rem;">Pour l'image, téléchargez d'abord l'image dans le dossier <code style="color: #62d0ff;">static/images/anime/</code> et indiquez le chemin (ex: <code style="color: #62d0ff;">/static/images/anime/mon-image.jpg</code>)</li>
+            <li style="margin-bottom: 0.5rem;">Ajoutez les informations du premier épisode</li>
+            <li style="margin-bottom: 0.5rem;">Pour ajouter d'autres épisodes, cliquez sur "Ajouter un épisode"</li>
+            <li style="margin-bottom: 0.5rem;">Pour les liens vidéo, utilisez le format Google Drive: <code style="color: #62d0ff;">https://drive.google.com/file/d/ID_VIDEO/view?usp=drive_link</code></li>
+            <li>Cliquez sur "Ajouter l'anime" pour valider</li>
+        </ol>
+    </div>
+    
+    {% if message %}
+    <div style="background-color: {% if success %}#d4edda{% else %}#f8d7da{% endif %}; 
+                color: {% if success %}#155724{% else %}#721c24{% endif %}; 
+                padding: 1rem; 
+                border-radius: 0.25rem; 
+                margin-bottom: 1.5rem;">
+        {{ message }}
+    </div>
+    {% endif %}
+    
+    <form method="POST" action="/admin/add_anime" enctype="multipart/form-data">
+        <div style="margin-bottom: 1.5rem;">
+            <label for="title" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Titre</label>
+            <input type="text" id="title" name="title" required style="width: 100%; padding: 0.75rem; border-radius: 0.25rem; border: 1px solid #ced4da;">
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label for="description" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Description</label>
+            <textarea id="description" name="description" rows="4" required style="width: 100%; padding: 0.75rem; border-radius: 0.25rem; border: 1px solid #ced4da;"></textarea>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label for="image" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Image URL</label>
+            <input type="text" id="image" name="image" placeholder="Par exemple: /static/images/anime/mon-anime.jpg" required style="width: 100%; padding: 0.75rem; border-radius: 0.25rem; border: 1px solid #ced4da;">
+            <small style="display: block; margin-top: 0.5rem; color: #6c757d;">
+                Assurez-vous d'avoir déjà téléchargé l'image dans le dossier static/images/anime/
+            </small>
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label for="genres" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Genres (séparés par des virgules)</label>
+            <input type="text" id="genres" name="genres" placeholder="action, aventure, fantasy" required style="width: 100%; padding: 0.75rem; border-radius: 0.25rem; border: 1px solid #ced4da;">
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label for="rating" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Note (1-10)</label>
+            <input type="number" id="rating" name="rating" min="1" max="10" step="0.1" required style="width: 100%; padding: 0.75rem; border-radius: 0.25rem; border: 1px solid #ced4da;">
+        </div>
+        
+        <div style="margin-bottom: 2rem;">
+            <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Mettre en avant sur la page d'accueil ?</label>
+            <div style="display: flex; align-items: center;">
+                <input type="radio" id="featured_yes" name="featured" value="yes" checked style="margin-right: 0.5rem;">
+                <label for="featured_yes" style="margin-right: 1.5rem;">Oui</label>
+                
+                <input type="radio" id="featured_no" name="featured" value="no" style="margin-right: 0.5rem;">
+                <label for="featured_no">Non</label>
+            </div>
+        </div>
+        
+        <h2 style="margin-bottom: 1.5rem;">Saison 1</h2>
+        
+        <div id="episodes-container">
+            <div class="episode" style="border: 1px solid #e9ecef; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                <h3 style="margin-bottom: 1rem;">Épisode 1</h3>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="episode_title_1" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Titre de l'épisode</label>
+                    <input type="text" id="episode_title_1" name="episode_title_1" required style="width: 100%; padding: 0.75rem; border-radius: 0.25rem; border: 1px solid #ced4da;">
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="episode_description_1" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Description de l'épisode</label>
+                    <textarea id="episode_description_1" name="episode_description_1" rows="3" required style="width: 100%; padding: 0.75rem; border-radius: 0.25rem; border: 1px solid #ced4da;"></textarea>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="episode_video_1" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">URL Vidéo Google Drive</label>
+                    <input type="text" id="episode_video_1" name="episode_video_1" placeholder="https://drive.google.com/file/d/ID_VIDEO/view?usp=drive_link" required style="width: 100%; padding: 0.75rem; border-radius: 0.25rem; border: 1px solid #ced4da;">
+                    <small style="display: block; margin-top: 0.5rem; color: #6c757d;">
+                        Vous devez d'abord uploader la vidéo sur Google Drive, puis copier le lien de partage ici.
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <button type="button" id="add-episode" style="background-color: #28a745; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer; margin-bottom: 2rem;">+ Ajouter un épisode</button>
+        
+        <div style="margin-top: 2rem;">
+            <button type="submit" style="background-color: var(--primary-color); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.25rem; cursor: pointer; font-weight: 600;">Ajouter l'anime</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let episodeCount = 1;
+    
+    document.getElementById('add-episode').addEventListener('click', function() {
+        episodeCount++;
+        
+        const container = document.getElementById('episodes-container');
+        const newEpisode = document.createElement('div');
+        newEpisode.className = 'episode';
+        newEpisode.style.border = '1px solid #e9ecef';
+        newEpisode.style.padding = '1.5rem';
+        newEpisode.style.borderRadius = '0.5rem';
+        newEpisode.style.marginBottom = '1.5rem';
+        
+        newEpisode.innerHTML = `
+            <h3 style="margin-bottom: 1rem;">Épisode ${episodeCount}</h3>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label for="episode_title_${episodeCount}" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Titre de l'épisode</label>
+                <input type="text" id="episode_title_${episodeCount}" name="episode_title_${episodeCount}" required style="width: 100%; padding: 0.75rem; border-radius: 0.25rem; border: 1px solid #ced4da;">
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label for="episode_description_${episodeCount}" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Description de l'épisode</label>
+                <textarea id="episode_description_${episodeCount}" name="episode_description_${episodeCount}" rows="3" required style="width: 100%; padding: 0.75rem; border-radius: 0.25rem; border: 1px solid #ced4da;"></textarea>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label for="episode_video_${episodeCount}" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">URL Vidéo Google Drive</label>
+                <input type="text" id="episode_video_${episodeCount}" name="episode_video_${episodeCount}" placeholder="https://drive.google.com/file/d/ID_VIDEO/view?usp=drive_link" required style="width: 100%; padding: 0.75rem; border-radius: 0.25rem; border: 1px solid #ced4da;">
+                <small style="display: block; margin-top: 0.5rem; color: #6c757d;">
+                    Vous devez d'abord uploader la vidéo sur Google Drive, puis copier le lien de partage ici.
+                </small>
+            </div>
+        `;
+        
+        container.appendChild(newEpisode);
+        
+        // Ajouter un champ caché pour indiquer le nombre total d'épisodes
+        const episodeCountInput = document.getElementById('episode_count') || document.createElement('input');
+        episodeCountInput.type = 'hidden';
+        episodeCountInput.id = 'episode_count';
+        episodeCountInput.name = 'episode_count';
+        episodeCountInput.value = episodeCount;
+        
+        if (!document.getElementById('episode_count')) {
+            document.querySelector('form').appendChild(episodeCountInput);
+        }
+    });
+    
+    // Ajouter un champ caché pour indiquer le nombre initial d'épisodes
+    const episodeCountInput = document.createElement('input');
+    episodeCountInput.type = 'hidden';
+    episodeCountInput.id = 'episode_count';
+    episodeCountInput.name = 'episode_count';
+    episodeCountInput.value = episodeCount;
+    document.querySelector('form').appendChild(episodeCountInput);
+});
+</script>
+{% endblock %}
